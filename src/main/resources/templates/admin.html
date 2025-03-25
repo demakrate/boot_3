@@ -11,6 +11,9 @@
     <script>
 
         function closeModal() {
+            const modal = document.getElementById("modalWindow");
+            const inputs = modal.querySelectorAll("input");
+            inputs.forEach(value => value.removeAttribute("readonly"));
             document.getElementById("modalWindow").style.display = "none";
         }
 
@@ -32,11 +35,14 @@
         }
 
         function sendData() {
+            const modal = document.getElementById("modalWindow");
+            const inputs = modal.querySelectorAll("input");
             const params = new URLSearchParams();
             let url;
             if (document.getElementById("send").innerText === "Удалить") {
                 params.append('id', document.getElementById("floatingID").value);
                 url = `/deleteUser`;
+                inputs.forEach(value => value.removeAttribute("readonly"));
             } else {
                 if (document.getElementById("send").innerText === "Заменить") {
                     url = "/changeUser";
@@ -77,9 +83,10 @@
 
 
         function showModal(funcType, buttonShow) {
+
             const modal = document.getElementById("modalWindow");
-            let buttonSend = document.getElementById("send");
             const inputs = modal.querySelectorAll("input");
+            let buttonSend = document.getElementById("send");
             if (buttonShow.closest("tr") != null) {
                 const row = buttonShow.closest("tr");
                 const cells = row.querySelectorAll("td");
@@ -89,7 +96,7 @@
                 document.getElementById("floatingMail").value = cells[3].textContent;
             }
             if (funcType === "delete") {
-                inputs.forEach(value => value.setAttribute("readonly", true));
+                inputs.forEach(value => value.setAttribute("readonly", true))
                 buttonSend.innerText = "Удалить";
                 buttonSend.setAttribute("class", "btn btn-danger rounded-pill");
                 document.getElementById("IDform").style.display = "block";
@@ -97,7 +104,7 @@
                 document.getElementById("chooseRole").style.display = "none";
                 modal.style.display = "block";
             } else if (funcType === "change") {
-                inputs.forEach(value => value.removeAttribute("readonly"));
+
                 inputs[0].setAttribute("readonly", true);
                 buttonSend.innerText = "Заменить";
                 buttonSend.setAttribute("class", "btn btn-primary rounded-pill");
@@ -109,7 +116,6 @@
                 const form = document.getElementById("sendForm");
                 document.getElementById("content").innerHTML = form.innerHTML;
                 buttonSend = document.getElementById("send");
-                inputs.forEach(value => value.removeAttribute("readonly"));
                 buttonSend.innerText = "Добавить";
                 buttonSend.setAttribute("class", "btn btn-primary rounded-pill");
                 document.getElementById("IDform").style.display = "none";
