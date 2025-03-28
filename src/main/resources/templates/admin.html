@@ -35,7 +35,7 @@
         }
 
         function sendData() {
-            const modal = document.getElementById("modalWindow");
+            const modal = document.getElementById("sendForm");
             const inputs = modal.querySelectorAll("input");
             const params = new URLSearchParams();
             let url;
@@ -51,14 +51,14 @@
                     url = "/addUser";
                 }
                 params.append('password', document.getElementById("floatingPassword").value);
-                const adminRole = document.getElementById("adminRole");
-                const userRole = document.getElementById("userRole");
+                const adminRole = document.getElementById("ADMIN");
+                const userRole = document.getElementById("USER");
                 if (adminRole.checked) {
-                    params.append('checkedData', adminRole.value)
+                    params.append('roles', adminRole.value)
                     console.log(adminRole.value);
                 }
                 if (userRole.checked) {
-                    params.append('checkedData', userRole.value)
+                    params.append('roles', userRole.value)
                     console.log(userRole.value);
                 }
             }
@@ -76,25 +76,28 @@
             }).then(response => {
                 return response.text()
             }).then(html => {
-                closeModal();
+                if (url != "/addUser") {
+                    closeModal();
+                }
                 document.getElementById("content").innerHTML = html;
             })
         }
 
-
-        function showModal(funcType, buttonShow) {
-
+        async function showModal(funcType, buttonShow) {
+            const params = new URLSearchParams();
+            let url = '/getUserByID';
+            if (buttonShow.closest("tr") != null) {
+                let id = buttonShow.closest("tr").querySelectorAll("td")[0].textContent;
+                params.append("id", id);
+                url = `/getUserByID?${params.toString()}&view=` + funcType;
+            }
+            const response = await fetch(url);
+            const html = await response.text();
+            document.getElementById("modal").innerHTML = html;
             const modal = document.getElementById("modalWindow");
             const inputs = modal.querySelectorAll("input");
             let buttonSend = document.getElementById("send");
-            if (buttonShow.closest("tr") != null) {
-                const row = buttonShow.closest("tr");
-                const cells = row.querySelectorAll("td");
-                document.getElementById("floatingID").value = cells[0].textContent;
-                document.getElementById("floatingName").value = cells[1].textContent;
-                document.getElementById("floatingAge").value = cells[2].textContent;
-                document.getElementById("floatingMail").value = cells[3].textContent;
-            }
+
             if (funcType === "delete") {
                 inputs.forEach(value => value.setAttribute("readonly", true))
                 buttonSend.innerText = "Удалить";
@@ -104,7 +107,6 @@
                 document.getElementById("chooseRole").style.display = "none";
                 modal.style.display = "block";
             } else if (funcType === "change") {
-
                 inputs[0].setAttribute("readonly", true);
                 buttonSend.innerText = "Заменить";
                 buttonSend.setAttribute("class", "btn btn-primary rounded-pill");
@@ -113,7 +115,8 @@
                 document.getElementById("chooseRole").style.display = "block";
                 modal.style.display = "block";
             } else {
-                const form = document.getElementById("sendForm");
+                const form = document.getElementById("sendFormBlock");
+                document.getElementById("modal").innerHTML = '';
                 document.getElementById("content").innerHTML = form.innerHTML;
                 buttonSend = document.getElementById("send");
                 buttonSend.innerText = "Добавить";
@@ -158,7 +161,7 @@
                         </li>
                         <li class="nav-item">
                             <div sec:authorize="hasAuthority('USER')">
-                                <a class="nav-link d-flex align-items-center gap-2 hover-bg-effect"  href="/user">
+                                <a class="nav-link d-flex align-items-center gap-2 hover-bg-effect" href="/user">
                                     User
                                 </a>
                             </div>
@@ -224,59 +227,6 @@
     </div>
 </div>
 
-<div class="modal modal-sheet bg-body-secondary p-4 py-md-5" tabindex="-1" role="dialog"
-     style="position: absolute; z-index: 1030; --bs-bg-opacity: 0.7"
-     id="modalWindow">
-    <div class="modal-dialog">
-        <div class="modal-content rounded-4 shadow">
-            <div class="modal-header p-5 pb-4 border-bottom-0">
-                <button onclick="closeModal()" type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-5 pt-0" id="sendForm">
-                <form style="max-width: 400px; margin-left: auto; margin-right: auto">
-                    <div class="form-floating mb-3" id = "IDform">
-                        <input type="text" class="form-control rounded-3" id="floatingID" name="name"
-                               placeholder="ID" readonly>
-                        <label for="floatingID">ID</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control rounded-3" id="floatingName" name="name"
-                               placeholder="Имя">
-                        <label for="floatingName">Имя</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="number" class="form-control rounded-3" id="floatingAge" name="age"
-                               placeholder="Возраст">
-                        <label for="floatingAge">Возраст</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="email" class="form-control rounded-3" id="floatingMail" name="mail"
-                               placeholder="mail">
-                        <label for="floatingMail">Mail</label>
-                    </div>
-                    <div class="form-floating mb-3" id="passwordForm" style="display: none">
-                        <input type="password" class="form-control rounded-3" id="floatingPassword" name="password"
-                               placeholder="Пароль">
-                        <label for="floatingPassword">Пароль</label>
-                    </div>
-                    <div class="form-check form-switch align-items-center gap-2" id=chooseRole>
-                        <p>Выберите роли:</p>
-                        <label class="form-check-label">
-                            <input class="form-check-input m-0 hoverable-switch" type="checkbox" name="options" id="adminRole"  role="switch" value="ADMIN"> ADMIN
-                        </label><br>
-                        <label class="form-check-label">
-                            <input class="form-check-input m-0 hoverable-switch" type="checkbox" name="options" id="userRole" role="switch" value="USER"> USER
-                        </label>
-                    </div>
-                    <button type="button" onclick="sendData()"
-                            id="send" style="display: block; margin: auto"></button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-
+<div id="modal"></div>
 </body>
 </html>

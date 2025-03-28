@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+<div class="modal modal-sheet bg-body-secondary p-4 py-md-5" tabindex="-1" role="dialog"
+     style="position: absolute; z-index: 1030; --bs-bg-opacity: 0.7"
+     id="modalWindow">
+    <div class="modal-dialog">
+        <div class="modal-content rounded-4 shadow">
+            <div class="modal-header p-5 pb-4 border-bottom-0">
+                <button onclick="closeModal()" type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-5 pt-0" id="sendFormBlock">
+                <form style="max-width: 400px; margin-left: auto; margin-right: auto" id="sendForm">
+                    <div class="form-floating mb-3" id="IDform">
+                        <input type="text" class="form-control rounded-3" id="floatingID" name="name"
+                               placeholder="ID" th:value="${user.id}" readonly>
+                        <label for="floatingID">ID</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control rounded-3" id="floatingName" name="name"
+                               placeholder="Имя" th:value="${user.name}">
+                        <label for="floatingName">Имя</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="number" class="form-control rounded-3" id="floatingAge" name="age"
+                               placeholder="Возраст" th:value="${user.age}">
+                        <label for="floatingAge">Возраст</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control rounded-3" id="floatingMail" name="mail"
+                               placeholder="mail" th:value="${user.mail}">
+                        <label for="floatingMail">Mail</label>
+                    </div>
+                    <div class="form-floating mb-3" id="passwordForm" style="display: none">
+                        <input type="password" class="form-control rounded-3" id="floatingPassword" name="password"
+                               placeholder="Пароль" >
+                        <label for="floatingPassword">Пароль</label>
+                    </div>
+                    <div class="form-check form-switch align-items-center gap-2" id=chooseRole>
+                        <p>Выберите роли:</p>
+                        <div th:each="role : ${roles}">
+                            <div class="form-check">
+                                <input class="form-check-input m-0 hoverable-switch"
+                                       type="checkbox"
+                                       name="options"
+                                       th:id="${role}"
+                                       role="switch"
+                                       th:value="${role}"
+                                >
+                                <label class="form-check-label" th:for="'role_' + ${role.id}"
+                                       th:text="${role.roleName}"></label>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" onclick="sendData()"
+                            id="send" style="display: block; margin: auto"></button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
